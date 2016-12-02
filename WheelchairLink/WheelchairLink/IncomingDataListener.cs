@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 
 namespace WheelchairLink
 {
-
-
     public class IncomingDataListener
     {
+        private const char END_CHAR = ';';
+
+        /*private Dictionary<char, Delegate> commands = new Dictionary<char, Delegate>() {
+            { 'd', {Console.WriteLine("ASD")} 
+             }; 
+             */
         private SerialPort _serialPort;
         private bool _keepReading = false;
         private Thread _readThread;
