@@ -1,0 +1,8 @@
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\CommunicationTester.exe.config
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\CommunicationTester.exe
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\CommunicationTester.pdb
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.exe
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.pdb
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\WheelchairLink.dll
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\WheelchairLink.pdb
+Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.csprojResolveAssemblyReference.cache
