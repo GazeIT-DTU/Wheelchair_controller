@@ -1,10 +1,12 @@
 #include "BT.h"
 
+// This represents the teensy at the wheelchair side.
 
 #define LED_PIN 13
 bool ledStatus = HIGH;
 BT bt;
 
+// This is: OK+ADDR:20914841C5E7
 
 
 enum State {
@@ -15,12 +17,14 @@ enum State {
   Dummy,
 };
 State _state = Idle;
-State _lastState = Dummy;
+State _lastState = Idle;
+BT::Request _currentRequrest;
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, ledStatus);
   Serial.begin(9600);
+  Serial1.begin(9600);
   delay(2000);
   Serial.println("Here is Wheelchair Controller");
  
@@ -30,10 +34,17 @@ void setup() {
   digitalWrite(LED_PIN, ledStatus);
 }
 
+// Set state
 void getAndHandleNextBTRequest() {
   BT::Request btReq = bt.getNextRequest();
   //Serial.print("handling msg type: "); Serial.println(btReq.type);
   switch (btReq.type) {
+    case BT::BT_REQUEST_DRIVE: {
+        _state = Drive;
+        _currentRequrest = btReq;
+        break;
+      }
+      
     case BT::BT_REQUEST_BLINK: {
         _state = Blink;
         break;
@@ -56,6 +67,7 @@ void getAndHandleNextBTRequest() {
   }
 }
 
+// What functions to do in this state
 void handleCurrentState() {
   /**************************
     If first round with this new state
@@ -66,6 +78,16 @@ void handleCurrentState() {
           //Empty
           break;
         }
+
+      case Drive: {
+          Serial.println("Drive!");
+          Serial.print("X: "); Serial.println(_currentRequrest.value1);
+          Serial.print("Y: "); Serial.println(_currentRequrest.value2);
+          
+          // Set output to either motordrives or joystick emulated
+          
+          break;
+        }  
 
       case Blink: {
           Serial.println("Blink!");
@@ -113,9 +135,16 @@ void handleCurrentState() {
 
 
 void loop() {
+// Was removing the input from the buffer before it was intepreted
+//  while(Serial1.available()){
+//    Serial.write(Serial1.read());
+//  }
+//  while(Serial.available()){
+//    Serial1.write(Serial.read());
+//  }
+//  
   if (bt.checkForIncomingMsg())
     getAndHandleNextBTRequest();
 
   handleCurrentState();
-
 }

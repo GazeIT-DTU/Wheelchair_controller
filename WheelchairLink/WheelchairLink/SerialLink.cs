@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WheelchairLink
 {
-    public class IncomingDataListener
+    public class SerialLink
     {
         public interface DataListener
         {
@@ -28,8 +29,8 @@ namespace WheelchairLink
         private volatile bool _keepReading = false;
         private Thread _readThread;
         private HashSet<DataListener> listeners = new HashSet<DataListener>();
-        
-        public IncomingDataListener()
+
+        public SerialLink()
         {
             _readThread = new Thread(Read);
             //Find correct port
@@ -49,13 +50,21 @@ namespace WheelchairLink
         {
             String[] portNames = SerialPort.GetPortNames();
             foreach (String name in portNames)
-                if (EstablishComminucation(name, 9600, Parity.None, 8, StopBits.One))
-                    return true;
+
+                for (int tries = 0; tries < 100; tries++)       // Added for loop while in development, as there seems to be alot of dataloss
+                {
+                    if (EstablishComminucation(name, 9600, Parity.None, 8, StopBits.One))
+                        return true;
+                }
+                
+
+
 
             return false;
         }
 
-        private bool EstablishComminucation(String portname, int baudRate, Parity parity, int dataBits, StopBits stopBits)
+        private bool EstablishComminucation(String portname, int baudRate, Parity parity, int dataBits,
+            StopBits stopBits)
         {
             Console.WriteLine("Establishing link to: " + portname);
             if (_serialPort != null && _serialPort.IsOpen)
@@ -73,17 +82,18 @@ namespace WheelchairLink
             Stopwatch sw = new Stopwatch();
             sw.Start();
             String response = "";
-            while(sw.ElapsedMilliseconds < 3000) //Wait maximum 3 seconds for the response
+            while (sw.ElapsedMilliseconds < 3000) //Wait maximum 3 seconds for the response
             {
                 String temp = _serialPort.ReadExisting();
                 response += temp;
-                if(temp.IndexOf(END_CHAR) > -1){
+                if (temp.IndexOf(END_CHAR) > -1)
+                {
                     //int i = response.IndexOf(END_CHAR);
                     String msg = getNextMsg(ref response);
                     Console.Out.WriteLine("Got response: " + msg);
                     if (msg.Equals(HANDSHAKE_RESPONSE + ""))
                     {
-                        Console.WriteLine("Found Wheelchar controller - Starting ReadThread...");
+                        Console.WriteLine("Found Wheelchair controller - Starting ReadThread...");
                         _keepReading = true;
                         _readThread.Start();
                         return true;
@@ -130,6 +140,14 @@ namespace WheelchairLink
         public bool RemoveDataListener(DataListener dl)
         {
             return listeners.Remove(dl);
+        }
+
+        public void Write(string msg)  
+        {
+            //TODO Make a maximum transfer rate, that conforms with the Baud rate og the link
+            //this._serialPort.BytesToWrite // If there is already something in the buffer clear it?
+            this._serialPort.WriteLine(msg);
+            Console.WriteLine("Wrote msg to serial");
         }
 
         private void Read()

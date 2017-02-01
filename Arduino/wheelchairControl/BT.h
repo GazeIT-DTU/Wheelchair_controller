@@ -9,8 +9,9 @@
 #define BT_SEP_CHAR ','
 #define BT_BUFFER   32
 
+#define BT_REQUEST_DRIVE_VALUE      'd'
 #define BT_REQUEST_BLINK_VALUE      'b'
-#define BT_REQUEST_DUMMY_VALUE      'd'
+#define BT_REQUEST_DUMMY_VALUE      'g'
 #define BT_REQUEST_HANDSHAKE_VALUE  '?'
 
 #define BT_RESPONSE_HANDSHAKE_VALUE '!'
@@ -20,6 +21,7 @@
 class BT {
   public:
      enum RequestType {
+      BT_REQUEST_DRIVE,
       BT_REQUEST_DUMMY,
       BT_REQUEST_BLINK, 
       BT_REQUEST_HANDSHAKE,    

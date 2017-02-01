@@ -51,6 +51,7 @@ bool BT::checkForIncomingMsg() {
   while (_bt.available()) {
     char c = _bt.read();
     //Serial.print(c);
+    //Serial.print("|");
     if (c == BT_END_CHAR) {
       _msgBuffer[_msgBufferCounter] = '\0';
       setLastMsg(String(_msgBuffer));
@@ -64,19 +65,23 @@ bool BT::checkForIncomingMsg() {
     //Create temp String with the current buffer
     _msgBuffer[_msgBufferCounter] = '\0'; //Tell String where it should stop
     String tempStr = String(_msgBuffer); //Create the string
-    if (-1 < tempStr.indexOf(F("OK+CONN"))) {
+    if (-1 < tempStr.indexOf("OK+CONN")) {
       //Device is connected
       onConnected();
       _msgBufferCounter = 0;
     }
-    if (-1 < tempStr.indexOf(F("OK+LOST"))) {
+    if (-1 < tempStr.indexOf("OK+LOST")) {
       //Lost connection
       onDisconnected();
       _msgBufferCounter = 0;
-      //  Serial.print("TempStr: "); Serial.println(tempStr);
+//      Serial.print("TempStr: "); Serial.println(tempStr);
+//      _bt.print("Delay for 2000");
+//      Serial.print("Delay for 2000");
+      delay(2000);
+      
     }
 
-    if (-1 < tempStr.indexOf(F("OK+CONNF"))) {
+    if (-1 < tempStr.indexOf("OK+CONNF")) {
       //Failed to connect. Accept this and set as slave
       setAsSlave();
       _msgBufferCounter = 0;
@@ -85,7 +90,7 @@ bool BT::checkForIncomingMsg() {
   return false;
 }
 
-
+// Check wether msg is a valid "command" / state of the form ""
 void BT::setLastMsg(String msg) {
   //Serial.print("BT::SetLastMsg: ");
   //Serial.println(msg);
@@ -94,6 +99,29 @@ void BT::setLastMsg(String msg) {
   Request request;
   Response response;
   switch (msg[0]) {
+    case BT_REQUEST_DRIVE_VALUE: {
+        request.type = BT_REQUEST_DRIVE;
+        
+        int indexOfComma = msg.indexOf(',');
+        int indexOfSemicolon = strlen(msg.c_str())-1;
+        if (indexOfComma == -1 || indexOfSemicolon == -1 ) {
+          Serial.println("Drive command of wrong format");
+          Serial.print("Command was: "); Serial.println(msg);
+          break;
+        }
+        // TODO Fix her // Problem here 30/01/2017
+        const char* xString = msg.substring(1, indexOfComma-1).c_str();                  // X is from 1 to indexOfComma-1
+        const char* yString = msg.substring(indexOfComma+1, indexOfSemicolon-1).c_str(); // Y is from indexOfComma+1 to indexOfSemicolon-1
+        Serial.println(xString);
+        Serial.println(yString); 
+        int x = atoi(xString);
+        int y = atoi(yString);
+        
+        request.value1 = x;
+        request.value2 = y;
+        validRequest = true;
+        break;
+      }
     case BT_REQUEST_DUMMY_VALUE: {
         request.type = BT_REQUEST_DUMMY;
         validRequest = true;
@@ -134,6 +162,10 @@ void BT::setLastMsg(String msg) {
 
 void BT::sendRequest(Request req) {
   switch (req.type) {
+    case BT_REQUEST_DRIVE: {
+        //_bt.write(BT_REQUEST_IR_ON_VALUE);
+        break;
+      }
     case BT_REQUEST_DUMMY: {
         //_bt.write(BT_REQUEST_IR_ON_VALUE);
         break;
@@ -203,7 +235,7 @@ BT::Response BT::getNextResponse() {
 void BT::setAsSlave() {
   _isConnecting = true;
   initialize();
-  Serial.println("Setting device as BT slave");
+  Serial.println("Setting device as BT slave... wait a couple of seconds");
 
   char buf[64];
   uint8_t length = 8;//sizeof(cmdsMaster);
@@ -218,13 +250,14 @@ void BT::setAsSlave() {
     delay(1000);
     while (_bt.available())
       _bt.read();
+    // Check that response is OK / OK+STUFF
     // checkForIncomingMsg();
     //   Serial.println();
   }
   _slaveMacID = "";
   _isConnecting = false;
+  Serial.println("Done!");
 }
-
 
 
 bool BT::isConnected() {

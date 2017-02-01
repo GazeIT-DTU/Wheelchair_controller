@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WheelchairLink
 {
-    public class CommunicationLink : IncomingDataListener.DataListener
+    public class CommunicationLink : SerialLink.DataListener
     {
         public enum Command
         {
@@ -15,7 +15,7 @@ namespace WheelchairLink
         }
 
         private Dictionary<char, Command> char2Command = new Dictionary<char, Command>() {
-            { 'd', Command.Dummy },
+            { 'g', Command.Dummy },
             { 'e', Command.Dummy2 },
         };
 
@@ -26,40 +26,50 @@ namespace WheelchairLink
         HashSet<CommandListener> cmdListeners = new HashSet<CommandListener>();
 
         private static CommunicationLink _instance;
-        private IncomingDataListener _incomingDataListener;
+        private SerialLink _serialLinkDataListener;
 
         public event EventHandler IncomingCommand;
 
         private CommunicationLink()
         {
-            //Honour the singleton pattern      
-            this._incomingDataListener = new IncomingDataListener();
-            _incomingDataListener.AddDataListener(this);
+            //Honor the singleton pattern      
+            this._serialLinkDataListener = new SerialLink();
+            _serialLinkDataListener.AddDataListener(this);
         }
 
-
-        public void Drive(int leftSpeed, int rightSpeed)
+        /// <summary>
+        /// Write a drive command to the serial port for the wheelchair to perform. The input should emulate a joystick position in a local coordinate system with the joystick in 0,0
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        public void DriveTowards(int x, int y)
         {
-
+            var command = "d" + x.ToString() + "," + y.ToString() + ";";   // Ex. "10,20;"
+            _serialLinkDataListener.Write(command);
         }
+
 
         public void Stop()
         {
-
+            //TODO implement special stop command
+            var command = "0,0;";   // Ex. "10,20;"
+            _serialLinkDataListener.Write(command);
         }
 
         public void Brake(int brakePower)
         {
-
+            throw new NotImplementedException();
+            // Originally there was no brake active on the chair. The brake on there is a "parking brake". 
+            // There is a lot of "drag" from the motors when not applied power, that slows it down
         }
 
 
         public void Close()
         {
-            _incomingDataListener.Close();
+            _serialLinkDataListener.Close();
         }
 
-        void IncomingDataListener.DataListener.onIncomingData(String str)
+        void SerialLink.DataListener.onIncomingData(String str)
         {
             Command cmd;
             bool found = char2Command.TryGetValue(str[0], out cmd);

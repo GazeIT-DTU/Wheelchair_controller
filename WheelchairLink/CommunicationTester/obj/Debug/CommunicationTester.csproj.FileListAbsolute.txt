@@ -6,3 +6,11 @@ Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debu
 Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.csprojResolveAssemblyReference.cache
 Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.exe
 Y:\Development\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.pdb
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\CommunicationTester.exe.config
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.exe
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.pdb
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\CommunicationTester.exe
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\CommunicationTester.pdb
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\WheelchairLink.dll
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\bin\Debug\WheelchairLink.pdb
+C:\Users\benja\OneDrive\Dokumenter\Git\Wheelchair_controller\WheelchairLink\CommunicationTester\obj\Debug\CommunicationTester.csprojResolveAssemblyReference.cache
